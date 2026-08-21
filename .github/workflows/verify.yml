@@ -1,0 +1,41 @@
+name: verify
+
+# The project's own review loop, run on every push. `verify` walks every beat
+# and every sub-step of every example, and fails on a broken image, a console
+# error, a beat that will not advance, or a canvas over the DOM budget.
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+
+      # The sheet is generated from source, so a stale committed one means
+      # someone hand-patched it. That caused a real incident once; fail here
+      # rather than let a reviewer read a sheet that does not match the deck.
+      - name: EDIT-SHEET.md is current
+        run: |
+          for d in examples/*/; do node packages/core/cli/index.js sheet "$d"; done
+          git diff --exit-code -- '**/EDIT-SHEET.md' || {
+            echo "::error::an EDIT-SHEET.md is out of date. Run: greatcircle sheet <deck>"
+            exit 1
+          }
+
+      - name: walk every beat
+        run: |
+          for d in examples/*/; do
+            echo "--- $d"
+            node packages/core/cli/index.js verify "$d" || exit 1
+          done
+
+      - name: build every example
+        run: |
+          for d in examples/*/; do node packages/core/cli/index.js build "$d" || exit 1; done

@@ -5,11 +5,17 @@
 A camera-driven canvas presentation engine. You write one file. You get one
 portable HTML file.
 
+![A line drawing itself across a chart from Manila to San Francisco](docs/media/crossing.gif)
+
 ```bash
-npm create greatcircle@latest my-talk
-cd my-talk && npm install
-npm run dev
+git clone https://github.com/karlok/greatcircle
+cd greatcircle && npm install
+npm run git          # "Git, as a place", 39 beats
 ```
+
+Once the packages are on npm that becomes `npm create greatcircle@latest my-talk`.
+Node 18+. Bun works too if you prefer it, Playwright included, and produces a
+byte-identical build.
 
 ---
 
@@ -37,7 +43,8 @@ Then the loop:
 
 Step 2's emphasis is critical (and the DX to be improved). Generating the sheet 
 once and hand-patching it afterwards caused a real incident: the reviewer approved
-content that had already been cut.
+content that had already been cut. CI now regenerates every sheet and fails if a
+committed one has drifted, so the rule is mechanical rather than a note in a doc.
 
 Step 4 is also important. An agent that can verify its own output is worth more 
 than one with a nicer chat interface.
@@ -77,6 +84,8 @@ Full reference in [AGENTS.md](AGENTS.md).
 ---
 
 ## Animated diagrams
+
+![A rebase: the feature branch label slides to new commits while the originals fade](docs/media/rebase.gif)
 
 `graph()` takes a second state and morphs between them on one key press: refs
 slide to their new commits, new commits fade in, abandoned ones fade back.
@@ -142,13 +151,18 @@ reaches you with `npm update` rather than a merge.
 ## Examples
 
 ```bash
-git clone <this repo> && cd greatcircle && npm install
 npm run git        # "Git, as a place" — 39 beats, five animated diagrams
 npm run crossing   # three beats: a line drawing itself across a chart
+npm run plates     # six photographs, and a compositor bug
 ```
 
-`examples/git-territories` is a fully worked talk. `examples/first-crossing`
-is the visual identity in one screen.
+| | |
+|---|---|
+| [`git-territories`](examples/git-territories/scene.js) | A fully worked 39-beat talk |
+| [`first-crossing`](examples/first-crossing/scene.js) | The visual identity in one screen |
+| [`plates`](examples/plates/scene.js) | `plate()` worked, and the regression case for the repaint stall |
+
+Each has an `EDIT-SHEET.md` next to it, which is what a human reviews.
 
 ---
 
@@ -162,6 +176,27 @@ The background is a plugin. It is empty by default.
 
 A `substrate.js` next to your `scene.js` is picked up automatically. The
 substrate is your cool background scenery, so thematically important.
+
+---
+
+## Presenting
+
+`P` opens a separate presenter window with your voice-over, a timer and the
+next line. Chrome's tab capture is compositor-level, so share the deck **tab**
+in Meet, never the screen, and the presenter window stays private.
+
+`?` for the rest of the keys.
+
+---
+
+## Status
+
+v0.1. The engine, the schema, the loop and three worked examples. It has
+carried one real 47-beat talk, live, served as a single static file.
+
+Known open issue: an intermittent repaint stall on large rasters, which never
+reproduces headless. `examples/plates` exists to exercise it and documents how
+to test by hand.
 
 ---
 

@@ -3,11 +3,50 @@
   "version": "0.1.0",
   "description": "Presentations that map the journey. A camera-driven canvas presentation engine.",
   "license": "MIT",
-  "bin": { "greatcircle": "cli/index.js" },
+  "bin": {
+    "greatcircle": "cli/index.js"
+  },
   "main": "cli/index.js",
-  "files": ["engine", "substrates", "runtime", "cli", "templates", "AGENTS.md", "README.md"],
-  "keywords": ["presentation", "slides", "canvas", "zoom", "van-wijk", "talk", "deck"],
-  "engines": { "node": ">=18" },
-  "peerDependencies": { "playwright": "^1.40.0" },
-  "peerDependenciesMeta": { "playwright": { "optional": true } }
+  "files": [
+    "engine",
+    "substrates",
+    "runtime",
+    "cli",
+    "templates",
+    "AGENTS.md",
+    "README.md"
+  ],
+  "keywords": [
+    "presentation",
+    "slides",
+    "canvas",
+    "zoom",
+    "van-wijk",
+    "talk",
+    "deck"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "playwright": "^1.40.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
+  },
+  "author": "Karlo Kilayko",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlok/greatcircle.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/karlok/greatcircle#readme",
+  "bugs": {
+    "url": "https://github.com/karlok/greatcircle/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

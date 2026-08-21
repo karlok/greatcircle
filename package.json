@@ -1,11 +1,18 @@
 {
   "name": "greatcircle-monorepo",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "git": "node packages/core/cli/index.js dev examples/git-territories",
     "crossing": "node packages/core/cli/index.js dev examples/first-crossing",
-    "verify:all": "for d in examples/*/; do node packages/core/cli/index.js verify \"$d\" || exit 1; done"
+    "plates": "node packages/core/cli/index.js dev examples/plates",
+    "sheet:all": "for d in examples/*/; do node packages/core/cli/index.js sheet \"$d\" || exit 1; done",
+    "verify:all": "for d in examples/*/; do node packages/core/cli/index.js verify \"$d\" || exit 1; done",
+    "build:all": "for d in examples/*/; do node packages/core/cli/index.js build \"$d\" || exit 1; done"
   },
-  "devDependencies": { "playwright": "^1.47.0" }
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
 }

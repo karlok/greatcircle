@@ -1,4 +1,4 @@
-# examples/first-crossing : edit sheet
+# examples/first-crossing/ : edit sheet
 
 REGENERATED FROM THE LIVE DECK. Every edit already applied is in here, and
 every beat that has been restructured is shown as it now actually plays.

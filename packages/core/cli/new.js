@@ -30,7 +30,7 @@ shots/
 
 const README = name => `# ${name}
 
-A talk built with [Great Circle](https://github.com/karlokilayko/greatcircle).
+A talk built with Great Circle.
 
     npm install
     npm run dev          # http://localhost:8899

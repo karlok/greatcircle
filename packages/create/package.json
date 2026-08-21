@@ -3,7 +3,26 @@
   "version": "0.1.0",
   "description": "Scaffold a Great Circle deck: npm create greatcircle@latest my-talk",
   "license": "MIT",
-  "bin": { "create-greatcircle": "index.js" },
-  "engines": { "node": ">=18" },
-  "dependencies": { "@greatcircle/core": "^0.1.0" }
+  "bin": {
+    "create-greatcircle": "index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@greatcircle/core": "^0.1.0"
+  },
+  "author": "Karlo Kilayko",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlok/greatcircle.git",
+    "directory": "packages/create"
+  },
+  "homepage": "https://github.com/karlok/greatcircle#readme",
+  "bugs": {
+    "url": "https://github.com/karlok/greatcircle/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

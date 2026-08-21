@@ -1,4 +1,13 @@
 node_modules/
+.DS_Store
+
+# generated: screenshots from `verify --shots`, and built decks
+shots/
 */shots/
 examples/*/shots/
 examples/*/*.html
+
+# scratch left by tooling that cannot delete on this mount
+_to_delete/
+_stage/
+_update.zip
