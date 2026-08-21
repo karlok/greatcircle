@@ -10,7 +10,7 @@ portable HTML file.
 ```bash
 git clone https://github.com/karlok/greatcircle
 cd greatcircle && npm install
-npm run git          # "Git, as a place", 39 beats
+npm run crossing     # the deck in the GIF above
 ```
 
 Once the packages are on npm that becomes `npm create greatcircle@latest my-talk`.
@@ -43,8 +43,8 @@ Then the loop:
 
 Step 2's emphasis is critical (and the DX to be improved). Generating the sheet 
 once and hand-patching it afterwards caused a real incident: the reviewer approved
-content that had already been cut. CI now regenerates every sheet and fails if a
-committed one has drifted, so the rule is mechanical rather than a note in a doc.
+content that had already been cut. CI regenerates every sheet on push and fails
+if the committed one is stale. So you can't forget.
 
 Step 4 is also important. An agent that can verify its own output is worth more 
 than one with a nicer chat interface.
@@ -53,24 +53,29 @@ than one with a nicer chat interface.
 
 ## The format
 
-Two lists.
+Two lists. Here is the whole deck from the GIF at the top of this page:
 
 ```js
-const NODES = [                                    // WHAT EXISTS
-  region('r.db',  4200, 1800, 4400, 3200, 'Primary', 'single writer'),
-  text  ('t.why', 9800, 1800, 4000, 240, 'Why one writer?'),
-  arc   ('a.1', at(4200, 900), at(9800, 900), .22),
+const SUBSTRATE = 'world-map';
+const SEAM = 60;                                 // where the projection is cut
+const P = { manila: LL(121.00, 14.60), sf: LL(-122.20, 37.60) };
+
+const NODES = [                                  // WHAT EXISTS
+  pin('p.manila', P.manila, 'Manila',        'left 1927',     190),
+  pin('p.sf',     P.sf,     'San Francisco', 'arrived 1927',  190, 'l'),
+  arc('a.cross',  P.manila, P.sf, .20),
 ];
 
-const BEATS = [                                    // WHAT HAPPENS
-  { act: 0, cam: cam(4200, 1800, 8000), show: ['r.db'],
-    vo: `We start with one database.` },
-
-  { act: 0, cam: cam(7000, 1800, 12000), show: ['r.db'],
-    steps:  [[], ['a.1'], ['t.why']],              // one key press each
-    stepVo: [`Reads come from here.`, `Writes go here.`, `So why one writer?`] },
+const BEATS = [                                  // WHAT HAPPENS
+  { act: 0, cam: cam(9000, 4500, 15000),
+    show:   ['p.manila', 'p.sf'],
+    steps:  [[], ['a.cross']],                   // one key press each
+    stepVo: [`Two ports.`, `And the crossing between them.`] },
 ];
 ```
+
+That is [`examples/first-crossing`](examples/first-crossing/scene.js), minus a
+title beat and the pull-back at the end.
 
 `cam(x, y, w)`: `w` is how much of the world fits across the screen. Smaller
 is more zoomed in. That one number is the entire camera language.
@@ -97,6 +102,10 @@ graph('g.rebase', x, y, w, BEFORE, { to: AFTER, capTo: 'replayed as new commits'
 This works because in git a commit never moves. Only the pointers do. Fixing
 every commit's position across both states means no path interpolation is
 needed, and what you see animate is exactly what git actually does.
+
+That example is [`examples/git-territories`](examples/git-territories/scene.js),
+a talk about git. The engine has no idea what git is: it moves a camera and
+reveals nodes, and the meaning is entirely yours.
 
 ---
 
@@ -136,7 +145,8 @@ Your deck folder holds your content and nothing else:
 
 ```
 my-talk/
-  scene.js        your deck
+  scene.js        your deck. The source of truth
+  EDIT-SHEET.md   generated from scene.js. What a human reviews
   AGENTS.md       the briefing for a coding agent
   theme.css       optional. Override any colour or face
   substrate.js    optional. Bring your own background
@@ -145,6 +155,49 @@ my-talk/
 
 The engine lives in `node_modules/@greatcircle/core`, so an engine fix
 reaches you with `npm update` rather than a merge.
+
+---
+
+## Reviewing
+
+`EDIT-SHEET.md` is how someone reviews a talk without reading any code. It is
+every beat in order, by number, with the voice-over and what appears on screen:
+
+```
+## 06 / 39  ·  II · Four territories
+
+THIS BEAT IS 3 PRESSES. Each one is a separate → on the night.
+
+  ── press 2 of 3 ──
+
+  VOICE OVER:
+    It is one binary file, .git/index, and it holds a complete proposed
+    snapshot of your next commit. Not a to-do list of files you flagged.
+
+  APPEARS NOW:
+    [n.ix]
+```
+
+Edit the prose in place. Leave the `[id]` markers alone. Drop a line starting
+with `>>` anywhere for a note back to whoever is editing the deck:
+
+```
+>> this beat drags, cut it
+>> swap this photo for the one in extras
+>> hold longer here
+```
+
+Then hand it to the agent. It reconciles your notes into `scene.js` by node id
+and regenerates the sheet.
+
+**The sheet is generated, so your notes are temporary by design.** The next
+`greatcircle sheet` overwrites the file. That is the point: a sheet that could
+drift from the deck is how a reviewer ends up approving content that was cut
+last week. Notes live in your working copy for as long as it takes to apply
+them, and the committed sheet is always clean.
+
+So if CI tells you a sheet does not match, it means one of two things: the deck
+moved and nobody regenerated, or there are `>>` notes nobody applied.
 
 ---
 

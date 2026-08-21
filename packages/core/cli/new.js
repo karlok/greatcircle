@@ -43,6 +43,19 @@ Then open \`scene.js\`. Two lists: NODES is what exists, BEATS is what happens.
 
 \`AGENTS.md\` is the briefing for a coding agent. The intended first move is to
 point one at this folder and tell it your talk.
+
+## Reviewing
+
+\`EDIT-SHEET.md\` is every beat in order, by number, with the voice-over and what
+appears on screen. Edit the prose in place, leave the \`[id]\` markers alone, and
+drop a line starting with \`>>\` for a note back to whoever edits the deck:
+
+    >> this beat drags, cut it
+    >> swap this photo
+
+Then hand it over. The sheet is generated from \`scene.js\`, so your notes are
+temporary: applying them and regenerating is what makes them stick. A sheet that
+can drift from the deck is how a reviewer approves content that was cut.
 `;
 
 module.exports = function newDeck(dir) {

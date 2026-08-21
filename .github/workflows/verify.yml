@@ -21,11 +21,18 @@ jobs:
       # The sheet is generated from source, so a stale committed one means
       # someone hand-patched it. That caused a real incident once; fail here
       # rather than let a reviewer read a sheet that does not match the deck.
-      - name: EDIT-SHEET.md is current
+      # A committed sheet must match what scene.js generates. It can fail two
+      # ways and they need different fixes, so say both rather than guessing.
+      - name: EDIT-SHEET.md matches scene.js
         run: |
           for d in examples/*/; do node packages/core/cli/index.js sheet "$d"; done
           git diff --exit-code -- '**/EDIT-SHEET.md' || {
-            echo "::error::an EDIT-SHEET.md is out of date. Run: greatcircle sheet <deck>"
+            echo "::error::A committed EDIT-SHEET.md does not match its scene.js."
+            echo "::error::Either the deck moved and the sheet was not regenerated"
+            echo "::error::  (fix: greatcircle sheet <deck>, and commit the result)"
+            echo "::error::or the sheet has >> review notes that were never applied"
+            echo "::error::  (fix: apply them to scene.js, then regenerate)."
+            git diff -- '**/EDIT-SHEET.md' | head -60
             exit 1
           }
 
