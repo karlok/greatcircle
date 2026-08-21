@@ -1,0 +1,9 @@
+{
+  "name": "@greatcircle/create",
+  "version": "0.1.0",
+  "description": "Scaffold a Great Circle deck: npm create greatcircle@latest my-talk",
+  "license": "MIT",
+  "bin": { "create-greatcircle": "index.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "@greatcircle/core": "^0.1.0" }
+}

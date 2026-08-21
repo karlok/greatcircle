@@ -1,0 +1,191 @@
+:root{
+  --ink:#07121a;
+  --ink2:#0b1c27;
+  --chart:#1b4a63;
+  --chart-soft:#12374a;
+  --paper:#f2e9d8;
+  --paper2:#e2d5bd;
+  --type:#e9e0cf;
+  --dim:#8ba3b2;
+  --brass:#d0a24e;
+  --jade:#3fe0c0;
+  --red:#c9503f;
+  --steel:#7fa8d0;
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Hoefler Text","Times New Roman",Georgia,serif;
+  --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--ink);color:var(--type);font-family:var(--sans)}
+body{cursor:default}
+body.grabbing{cursor:grabbing}
+
+/* ---------- stage ---------- */
+#stage{position:fixed;inset:0;overflow:hidden;background:
+  radial-gradient(120% 90% at 50% 45%, #0d2231 0%, #071019 60%, #04090e 100%);}
+/* will-change is applied only while the camera is moving (see engine/app.js).
+   Leaving it on permanently keeps #world a fixed-raster composited layer,
+   which is what makes Chrome drop tiles and paint an image only partially. */
+#world{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+#world.moving{will-change:transform}
+
+/* ---------- fixed overlays ---------- */
+#grain{position:fixed;inset:0;pointer-events:none;opacity:.32;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");}
+#vignette{position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(115% 85% at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 82%, rgba(0,0,0,.85) 100%);}
+#desat{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 1.6s ease;
+  backdrop-filter:grayscale(1) contrast(1.06) brightness(.92);-webkit-backdrop-filter:grayscale(1) contrast(1.06) brightness(.92)}
+#desat.on{opacity:1}
+#warm{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 2.2s ease;
+  background:radial-gradient(100% 80% at 50% 55%, rgba(63,224,192,.055) 0%, rgba(63,224,192,0) 72%)}
+#warm.on{opacity:1}
+
+/* ---------- chrome ---------- */
+#chrome{position:fixed;inset:0;pointer-events:none;z-index:40}
+#actlabel{position:absolute;left:34px;bottom:30px;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--dim);opacity:.85}
+#actlabel b{color:var(--brass);font-weight:500}
+#counter{position:absolute;right:34px;bottom:30px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--dim);opacity:.6}
+#bar{position:absolute;left:0;right:0;bottom:0;height:2px;display:flex;gap:2px;opacity:.75}
+#bar .seg{flex:1;height:2px;background:rgba(255,255,255,.10);position:relative;overflow:hidden}
+#bar .seg i{position:absolute;inset:0;width:0;background:var(--brass);transition:width .5s ease}
+#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:56px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.18em;color:var(--dim);opacity:0;transition:opacity .4s;text-transform:uppercase}
+#hint.on{opacity:.8}
+/* presenter mode: suppress presenter-only furniture in the SHARED tab */
+body.presenting #counter,body.presenting #actlabel{opacity:0;transition:opacity .5s ease}
+
+/* ---------- notes ---------- */
+#notes{position:fixed;right:0;top:0;bottom:0;width:min(440px,34vw);z-index:60;background:rgba(4,10,15,.93);
+  border-left:1px solid rgba(208,162,78,.22);transform:translateX(101%);transition:transform .45s cubic-bezier(.6,0,.2,1);
+  padding:28px 30px;overflow:auto;backdrop-filter:blur(14px)}
+#notes.on{transform:none}
+#notes h4{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin:0 0 14px}
+#notes .vo{font-family:var(--serif);font-size:17px;line-height:1.62;color:#e9e0cf}
+#notes .vo em{color:var(--jade);font-style:normal;background:rgba(63,224,192,.09);padding:0 3px}
+/* presenter-only cue: never spoken, never on screen */
+#notes .vo .cue{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--brass);
+  border:1px solid rgba(208,162,78,.35);border-radius:3px;padding:1px 6px;margin:0 3px;
+  white-space:nowrap;vertical-align:.12em}
+#notes .nxt{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.09);
+  font-family:var(--mono);font-size:11px;line-height:1.6;color:#7e94a2}
+#notes .nxt span{color:var(--brass)}
+#clock{font-family:var(--mono);font-size:11px;color:#5f7383;letter-spacing:.1em;margin-bottom:18px}
+
+/* ---------- help ---------- */
+#help{position:fixed;inset:0;z-index:70;background:rgba(4,9,13,.92);backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s}
+#help.on{opacity:1;pointer-events:auto}
+#help .box{max-width:640px;padding:0 40px}
+#help h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 26px;color:var(--paper)}
+#help table{border-collapse:collapse;font-size:13.5px}
+#help td{padding:7px 0;color:#a9bcc7}
+#help td:first-child{width:150px}
+#help kbd{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  border-radius:4px;padding:3px 7px;color:var(--paper);margin-right:5px}
+
+/* ---------- world nodes ----------
+   No will-change here. Promoting every node to its own GPU layer permanently
+   is what made playback choppy; Chrome promotes them on its own while an
+   opacity transition is actually running, which is the only time it helps. */
+.node{position:absolute;transform-origin:50% 50%;transition:opacity .85s ease, filter .85s ease}
+.node.hidden{opacity:0;pointer-events:none}
+.node.ghost{opacity:.13;filter:saturate(.25)}
+.node.recap{opacity:.62;filter:saturate(.85)}
+.node.live{opacity:1;filter:none}
+
+/* plate: archival photo print */
+.plate{background:var(--paper);padding:2.2%;box-shadow:0 3px 18px rgba(0,0,0,.55), 0 30px 90px rgba(0,0,0,.45);
+  border-radius:1px}
+.plate.bare{background:none;padding:0;box-shadow:0 20px 70px rgba(0,0,0,.6)}
+.plate img{display:block;width:100%;height:auto}
+.plate .cap{font-family:var(--mono);color:#33424c;line-height:1.5;padding-top:.85em;letter-spacing:.01em}
+.plate.bare .cap{color:var(--dim)}
+
+/* tag: mono caption on the canvas */
+.tag{font-family:var(--mono);color:var(--brass);letter-spacing:.16em;text-transform:uppercase;line-height:1.5}
+.tag .sub{display:block;color:var(--dim);letter-spacing:.08em;text-transform:none;margin-top:.5em}
+
+/* wtext: prose */
+.wtext{font-family:var(--serif);color:var(--type);line-height:1.34;letter-spacing:-.005em}
+.wtext .lede{color:var(--paper)}
+.wtext em{font-style:italic;color:var(--brass)}
+.wtext code{font-family:var(--mono);font-size:.80em;color:var(--jade);background:rgba(63,224,192,.09);
+  padding:0 .28em;border-radius:.1em;letter-spacing:-.01em}
+.wtext .sm{font-family:var(--mono);font-size:.34em;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+  display:block;margin-bottom:1.6em;line-height:1.6}
+.wtext .aside{font-family:var(--mono);font-size:.30em;letter-spacing:.03em;text-transform:none;color:#8fa6b4;
+  display:block;margin-top:1.6em;line-height:1.7}
+
+.rule{height:1px;background:linear-gradient(90deg,rgba(208,162,78,.7),rgba(208,162,78,0))}
+
+/* region: a named territory.
+   Border width is in em, not px. A px border is a WORLD-unit border, which
+   at a wide shot is a fraction of a screen pixel and disappears entirely. */
+.region{border:.055em dashed rgba(208,162,78,.42);border-radius:.05em;position:relative;
+  background:linear-gradient(180deg, rgba(27,74,99,.26), rgba(11,28,39,.06) 78%)}
+.region .rlabel{position:absolute;left:0;top:-1.35em;
+  font-family:var(--mono);font-size:1em;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--brass);white-space:nowrap;line-height:1}
+.region .rlabel small{display:block;letter-spacing:.06em;text-transform:none;
+  color:var(--dim);font-size:.58em;margin-top:.5em;white-space:nowrap}
+.region.remote{border-color:rgba(127,168,208,.42)}
+.region.remote .rlabel{color:var(--steel)}
+.region.danger{border-color:rgba(201,80,63,.50)}
+.region.danger .rlabel{color:var(--red)}
+
+/* code: a terminal block */
+.code{font-family:var(--mono);background:rgba(4,11,16,.92);border:1px solid rgba(208,162,78,.26);
+  border-radius:.12em;padding:.9em 1.1em;line-height:1.62;box-shadow:0 20px 70px rgba(0,0,0,.55);position:relative}
+.code .ctitle{display:block;font-size:.62em;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
+  margin-bottom:.9em;padding-bottom:.55em;border-bottom:1px solid rgba(255,255,255,.08)}
+.code .cl{display:block;color:var(--paper);white-space:pre-wrap}
+.code .cl i{color:var(--brass);font-style:normal;margin-right:.6em;opacity:.85}
+.code .cl.out{color:#8fa6b4}
+.code .cl b{color:var(--jade);font-weight:400;background:rgba(63,224,192,.10);padding:0 .2em}
+
+/* graph: a commit DAG.
+   Two states live in one SVG. Commit positions are identical in both, because
+   a commit never moves in git, so every edge that survives has unchanged
+   endpoints and nothing needs path interpolation. What animates is exactly
+   what animates in git: a ref slides to a different commit, new commits fade
+   in, abandoned ones fade back. Adding .to plays it forward. */
+/* The `to` class is set by the engine on the NODE wrapper, not on .graph
+   itself, because that is the element the engine already holds. */
+.graph{position:relative}
+.graph .cm,.graph .eg{opacity:var(--oa);transition:opacity .75s ease}
+.node.to .graph .cm,.node.to .graph .eg{opacity:var(--ob)}
+.graph .rf{opacity:var(--oa);transform:translate(var(--ax),var(--ay));
+  transition:transform .95s cubic-bezier(.5,0,.15,1), opacity .6s ease}
+.node.to .graph .rf{opacity:var(--ob);transform:translate(var(--bx),var(--by))}
+.graph .gcap{font-family:var(--mono);font-size:.62em;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim);text-align:center;margin-top:1.1em;position:relative;display:block;min-height:2.4em}
+.graph .gcap .ca,.graph .gcap .cb{display:block;transition:opacity .6s ease}
+.graph .gcap .cb{position:absolute;left:0;right:0;top:0;opacity:0}
+.node.to .graph.two .gcap .ca{opacity:0}
+.node.to .graph.two .gcap .cb{opacity:1}
+
+/* glyph: one large character, stamped on reveal */
+.glyph{text-align:center}
+.glyph .ch{display:block;font-family:'Songti SC','Hiragino Mincho ProN','Yu Mincho','Noto Serif CJK SC','Noto Serif SC','Source Han Serif SC',STSong,serif;
+  font-size:1em;line-height:1;color:var(--paper);text-shadow:0 .04em .09em rgba(0,0,0,.55)}
+.glyph .rule{display:block;width:32%;height:.014em;margin:.34em auto 0;border-radius:.01em;
+  background:linear-gradient(90deg,rgba(208,162,78,0),rgba(208,162,78,.75),rgba(208,162,78,0))}
+.glyph .ph{display:block;font-family:var(--mono);font-size:.185em;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--brass);margin-top:1.15em;text-indent:.34em}
+.node.live .glyph{animation:stamp .95s cubic-bezier(.16,.84,.24,1) both}
+@keyframes stamp{from{opacity:0;transform:scale(.84) translateY(.06em);filter:blur(9px)}
+  to{opacity:1;transform:none;filter:none}}
+
+/* pin: a located marker */
+.pin{position:absolute}
+.pin .dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;
+  background:var(--brass);box-shadow:0 0 0 .5em rgba(208,162,78,.16)}
+.pin .ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;
+  border:1px solid rgba(208,162,78,.55);animation:ping 3.4s ease-out infinite}
+@keyframes ping{0%{opacity:.9;transform:translate(-50%,-50%) scale(.35)}70%,100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+.pin .lab{position:absolute;left:130%;top:50%;transform:translateY(-50%);white-space:nowrap;
+  font-family:var(--mono);color:var(--brass);letter-spacing:.2em;text-transform:uppercase}
+.pin .lab.l{left:auto;right:130%;text-align:right}
+.pin .lab small{display:block;color:var(--dim);letter-spacing:.1em;text-transform:none;margin-top:.4em;opacity:.85}

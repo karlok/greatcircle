@@ -1,0 +1,11 @@
+{
+  "name": "greatcircle-monorepo",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "git": "node packages/core/cli/index.js dev examples/git-territories",
+    "crossing": "node packages/core/cli/index.js dev examples/first-crossing",
+    "verify:all": "for d in examples/*/; do node packages/core/cli/index.js verify \"$d\" || exit 1; done"
+  },
+  "devDependencies": { "playwright": "^1.47.0" }
+}

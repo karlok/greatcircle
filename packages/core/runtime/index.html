@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Great Circle</title>
+<link rel="stylesheet" href="/_gc/runtime/theme.css">
+<!-- Optional per-deck override. Drop a theme.css next to your scene.js to
+     change colours or type without forking the runtime. -->
+<link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+
+<div id="stage">
+  <div id="world"></div>
+</div>
+
+<div id="grain"></div>
+<div id="desat"></div>
+<div id="warm"></div>
+<div id="vignette"></div>
+
+<div id="chrome">
+  <div id="actlabel"></div>
+  <div id="counter"></div>
+  <div id="hint">manual view &nbsp;·&nbsp; press → to resume</div>
+  <div id="bar"></div>
+</div>
+
+<div id="notes">
+  <div id="clock">00:00</div>
+  <h4>Voice over</h4>
+  <div class="vo" id="voText"></div>
+  <div class="nxt" id="nxtText"></div>
+</div>
+
+<div id="help"><div class="box">
+  <h3>Navigating the canvas</h3>
+  <table>
+    <tr><td><kbd>→</kbd><kbd>Space</kbd></td><td>next beat</td></tr>
+    <tr><td><kbd>←</kbd></td><td>previous beat</td></tr>
+    <tr><td><kbd>O</kbd></td><td>overview, see the whole canvas</td></tr>
+    <tr><td><kbd>1</kbd>–<kbd>9</kbd></td><td>jump to an act</td></tr>
+    <tr><td><kbd>P</kbd></td><td><b style="color:#3fe0c0;font-weight:400">presenter window</b>, opens a second window for your voice-over. Share the deck <i>tab</i> in Meet and it stays private.</td></tr>
+    <tr><td><kbd>N</kbd></td><td>notes panel, inside this window (visible if you share)</td></tr>
+    <tr><td><kbd>T</kbd></td><td>start / reset the presenter timer</td></tr>
+    <tr><td><kbd>Home</kbd></td><td>jump back to the first beat</td></tr>
+    <tr><td><kbd>F</kbd></td><td>full screen</td></tr>
+    <tr><td>drag / scroll</td><td>free-roam the canvas</td></tr>
+    <tr><td><kbd>R</kbd></td><td>force a repaint, if an image ever renders half-drawn</td></tr>
+    <tr><td><kbd>?</kbd></td><td>this panel</td></tr>
+  </table>
+</div></div>
+
+<!-- Load order matters: registry, primitives, substrates, scene, engine.
+     /_gc/ is the installed @greatcircle/core; / is your deck folder.
+     `greatcircle build` resolves all of this into one file and replaces
+     this block, so nothing here ships to your audience. -->
+<script src="/_gc/engine/gc.js"></script>
+<script src="/_gc/engine/primitives.js"></script>
+<script src="/_gc/substrates/grid.js"></script>
+<script src="/_gc/substrates/blueprint.js"></script>
+<script src="/scene.js"></script>
+<script>
+  /* The map substrate drags a 500KB coastline path with it, so it is only
+     fetched when a scene actually asks for it. A substrate.js sitting next to
+     your scene is loaded the same way, so a deck can bring its own. */
+  if (typeof SUBSTRATE !== 'undefined' && SUBSTRATE === 'world-map') {
+    document.write('<script src="/_gc/substrates/land-path.js"><\/script>');
+    document.write('<script src="/_gc/substrates/world-map.js"><\/script>');
+  } else if (typeof SUBSTRATE !== 'undefined' && !GC.get(SUBSTRATE)) {
+    document.write('<script src="/substrate.js"><\/script>');
+  }
+</script>
+<script src="/_gc/engine/app.js"></script>
+</body>
+</html>

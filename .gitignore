@@ -1,0 +1,4 @@
+node_modules/
+*/shots/
+examples/*/shots/
+examples/*/*.html
