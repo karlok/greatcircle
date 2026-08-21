@@ -13,18 +13,18 @@ npm run dev
 
 ---
 
-## The loop is the product
+## It's a loop!
 
 There is no GUI, no chat box, no API key and no auth surface anywhere in this
-project, and there is not going to be. The authoring interface is a small
-legible data file, and coding agents are extremely good at editing small
-legible data files.
+project. The authoring interface is a small legible data file, and coding agents 
+are extremely good at editing small legible data files.
 
-So the intended first move is: **point an agent at your deck folder and tell
-it your talk.** `AGENTS.md` is scaffolded next to your `scene.js` and teaches
-it the schema, the coordinate system, the camera language and the house rules.
+So the intended usage is: **point an agent at your deck folder and tell
+it what you want in your talk.** `AGENTS.md` is scaffolded next to your `scene.js` 
+and teaches it the schema, the coordinate system, the camera language and the house 
+rules.
 
-Then the loop, which is the part that actually works:
+Then the loop:
 
 ```
 1. the agent edits scene.js
@@ -35,12 +35,12 @@ Then the loop, which is the part that actually works:
 5. npm run build      -> one portable HTML file, which is what you present
 ```
 
-Step 2's emphasis is not decorative. Generating the sheet once and
-hand-patching it afterwards caused a real incident: the reviewer approved
+Step 2's emphasis is critical (and the DX to be improved). Generating the sheet 
+once and hand-patching it afterwards caused a real incident: the reviewer approved
 content that had already been cut.
 
-Step 4 matters more than it sounds. An agent that can see its own output is
-worth more than one with a nicer text box.
+Step 4 is also important. An agent that can verify its own output is worth more 
+than one with a nicer chat interface.
 
 ---
 
@@ -85,7 +85,7 @@ slide to their new commits, new commits fade in, abandoned ones fade back.
 graph('g.rebase', x, y, w, BEFORE, { to: AFTER, capTo: 'replayed as new commits' })
 ```
 
-It works because in git a commit never moves. Only the pointers do. Fixing
+This works because in git a commit never moves. Only the pointers do. Fixing
 every commit's position across both states means no path interpolation is
 needed, and what you see animate is exactly what git actually does.
 
@@ -96,12 +96,11 @@ needed, and what you see animate is exactly what git actually does.
 The camera path is van Wijk and Nuij's optimal zoom-and-pan (1996), which
 models `(x, y, zoom)` as a point in hyperbolic space and solves for the
 geodesic between two camera positions. A great circle is the geodesic on a
-sphere, so the name is not a metaphor: the engine computes great circles in
-camera space.
+sphere, so that's why the name: the engine computes great circles in camera 
+space.
 
 In practice it means the camera pulls back and dives in on its own when the
-distance warrants it, instead of lerping. That is the difference between this
-and every zoom-canvas tool that makes people seasick.
+distance warrants it, instead of lerping. That is the coolness this tool offers.
 
 ---
 
@@ -122,7 +121,7 @@ Playwright; nothing else does. Authoring needs a text editor.
 
 ---
 
-## What you own, and what you don't
+## What is what
 
 Your deck folder holds your content and nothing else:
 
@@ -155,14 +154,14 @@ is the visual identity in one screen.
 
 ## Substrates
 
-The background is a plugin, and it is empty by default.
+The background is a plugin. It is empty by default.
 
 - `grid` — a near-invisible rule grid. The default
 - `blueprint` — engineering-drawing paper, border and registration marks
 - `world-map` — real coastlines, graticule, rhumb web, compass rose, starfield
 
 A `substrate.js` next to your `scene.js` is picked up automatically. The
-substrate is scenery; do not let it become the framework.
+substrate is your cool background scenery, so thematically important.
 
 ---
 
@@ -171,8 +170,8 @@ substrate is scenery; do not let it become the framework.
 A GUI. Hosting. Accounts. An API-key overlay. A chat window. If any of those
 ever ship, the project has lost the plot.
 
-Next is the video renderer. Because the camera is a pure function of time, the
-same file that drives a live talk renders offline to a video file at any
+Next up will be the video renderer. Because the camera is a pure function of time, 
+the same file that drives a live talk renders offline to a video file at any
 resolution, with no screen recording and no dropped frames.
 
 ---
