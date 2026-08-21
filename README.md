@@ -204,9 +204,9 @@ moved and nobody regenerated, or there are `>>` notes nobody applied.
 ## Examples
 
 ```bash
-npm run git        # "Git, as a place" — 39 beats, five animated diagrams
-npm run crossing   # three beats: a line drawing itself across a chart
-npm run plates     # six photographs, and a compositor bug
+npm run territories   # "Git, as a place" — 39 beats, five animated diagrams
+npm run crossing      # three beats: a line drawing itself across a chart
+npm run plates        # six photographs, and a compositor bug
 ```
 
 | | |

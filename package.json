@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "git": "node packages/core/cli/index.js dev examples/git-territories",
+    "territories": "node packages/core/cli/index.js dev examples/git-territories",
     "crossing": "node packages/core/cli/index.js dev examples/first-crossing",
     "plates": "node packages/core/cli/index.js dev examples/plates",
     "sheet:all": "for d in examples/*/; do node packages/core/cli/index.js sheet \"$d\" || exit 1; done",
