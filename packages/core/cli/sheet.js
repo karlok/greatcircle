@@ -64,7 +64,11 @@ const strip = h => h
 const title = (() => {
   const t = (byId['t.title'] || {}).html || '';
   const m = t.match(/class="lede"[^>]*>([^<]+)</);
-  return m ? m[1].trim() : deckDir;
+  /* Fall back to the folder's own name, never the argument as typed.
+     `sheet foo` and `sheet foo/` and `sheet ../x/foo` must all produce a
+     byte-identical file, or the CI check that compares a committed sheet
+     against a freshly generated one fails for no real reason. */
+  return m ? m[1].trim() : path.basename(deck);
 })();
 
 let out = `# ${title} : edit sheet

@@ -25,8 +25,8 @@ const P = {
 
 const NODES = [
   text('t.x', 12000, 2600, 7000, 330, `
-    A line, crawling across a map.
-    <span class="aside">Two points, a bow, and a glyph that travels the path.</span>`),
+    <span class="lede">First crossing</span>
+    <span class="aside">A line crawling across a map. Two points, a bow, and a glyph that travels the path.</span>`),
 
   pin('p.manila', P.manila, 'Manila', 'left 1927', 190),
   pin('p.sf', P.sf, 'San Francisco', 'arrived 1927', 190, 'l'),

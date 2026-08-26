@@ -1,4 +1,4 @@
-# examples/first-crossing/ : edit sheet
+# first-crossing : edit sheet
 
 REGENERATED FROM THE LIVE DECK. Every edit already applied is in here, and
 every beat that has been restructured is shown as it now actually plays.
@@ -24,8 +24,8 @@ VOICE OVER:
 
 ON CANVAS:
   [t.x]
-    A line, crawling across a map.
-    ASIDE: Two points, a bow, and a glyph that travels the path.
+    First crossing
+    ASIDE: A line crawling across a map. Two points, a bow, and a glyph that travels the path.
 
 ---
 
