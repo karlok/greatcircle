@@ -115,8 +115,8 @@ body.presenting #counter,body.presenting #actlabel{opacity:0;transition:opacity 
   padding:0 .28em;border-radius:.1em;letter-spacing:-.01em}
 .wtext .sm{font-family:var(--mono);font-size:.34em;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
   display:block;margin-bottom:1.6em;line-height:1.6}
-.wtext .aside{font-family:var(--mono);font-size:.30em;letter-spacing:.03em;text-transform:none;color:#8fa6b4;
-  display:block;margin-top:1.6em;line-height:1.7}
+.wtext .aside{font-family:var(--mono);font-size:.42em;letter-spacing:.02em;text-transform:none;color:#8fa6b4;
+  display:block;margin-top:1.3em;line-height:1.6}
 
 .rule{height:1px;background:linear-gradient(90deg,rgba(208,162,78,.7),rgba(208,162,78,0))}
 

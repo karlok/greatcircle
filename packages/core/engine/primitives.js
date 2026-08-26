@@ -132,11 +132,24 @@ function code(id, x, y, w, fs, lines, opt = {}) {
                   because that is the direction git actually points.
    spec.refs    : [{ at, name, kind }]       kind: 'branch' | 'head' | 'remote' | 'tag'
 
+   opt.cards: true swaps the circle-and-wire rendering for short, wide
+   rectangles stacked like a pile of documents — a commit as a container you
+   could imagine opening, rather than a dot in a graph. Meant for the
+   vertical (col = lane, row = time) orientation: two cards in the same
+   column one row apart are drawn touching, with no connecting line, because
+   physical adjacency already says "next in the pile." A line only appears
+   where adjacency alone doesn't read as a relationship — a different
+   column (a branch tie, a merge fold-back) or a same-column gap bigger than
+   one row (main jumping over a run of branch-only rows to reach a merge
+   commit further down the pile).
+
    The whole graph is one node, so it reveals and ghosts as a unit. To reveal
    a graph a piece at a time, define several graphs and step through them. */
 function graph(id, x, y, w, spec, opt = {}) {
   const A = spec, B = opt.to || null;
-  const CW = 150, RH = 130, R = 30;
+  const cards = !!opt.cards;
+  const CW = cards ? 380 : 150, RH = cards ? 106 : 130, R = 30;
+  const cardW = 300, cardH = 80;
 
   /* ---- union layout ----
      A commit's position is fixed across both states, because in git a commit
@@ -158,7 +171,7 @@ function graph(id, x, y, w, spec, opt = {}) {
   const rows = Math.max(...union.map(c => c.row)) + 1;
   const VW = cols * CW + 120, VH = rows * RH + 190;
   const at = {};
-  union.forEach(c => { at[c.id] = { x: 70 + c.col * CW, y: VH - 120 - c.row * RH }; });
+  union.forEach(c => { at[c.id] = { x: 70 + c.col * CW, y: VH - 120 - c.row * RH, col: c.col, row: c.row }; });
 
   const LANE = ['#d0a24e', '#3fe0c0', '#c9503f', '#7fa8d0'];
   const KCOL = { head: '#f2e9d8', remote: '#7fa8d0', tag: '#c9503f', branch: '#3fe0c0' };
@@ -177,31 +190,54 @@ function graph(id, x, y, w, spec, opt = {}) {
     allEdges.push(e);
   });
 
+  /* The point on a card's own border facing another card — the line starts
+     and ends at the edge of the rectangle, not its centre. */
+  const cardEdgePoint = (p, other) => p.x !== other.x
+    ? { x: p.x + Math.sign(other.x - p.x) * cardW / 2, y: p.y }
+    : { x: p.x, y: p.y + Math.sign(other.y - p.y) * cardH / 2 };
+
   let edges = '';
   allEdges.forEach(e => {
     const a = at[e[0]], b = at[e[1]]; if (!a || !b) return;
+
+    /* Cards one row apart in the same column are drawn touching. Adjacency
+       already reads as "the next one in the pile," so the connector would
+       be visual noise stacked directly on top of the card seam. */
+    if (cards && a.col === b.col && Math.abs(a.row - b.row) === 1) return;
+
     const dimA = (seen[e[0]] || {}).dim, k = edgeKey(e);
     const oa = eA.has(k) ? (dimA ? .12 : .30) : 0;
     const ob = eB.has(k) ? ((B && (B.commits.find(c => c.id === e[0]) || {}).dim) ? .12 : .30) : 0;
-    const mid = (a.x + b.x) / 2;
-    const d = a.y === b.y
-      ? `M${a.x - R} ${a.y}H${b.x + R}`
-      : `M${a.x - R} ${a.y}C${mid} ${a.y} ${mid} ${b.y} ${b.x + R} ${b.y}`;
+
+    const pa = cards ? cardEdgePoint(a, b) : { x: a.x - R, y: a.y };
+    const pb = cards ? cardEdgePoint(b, a) : { x: b.x + R, y: b.y };
+    const mid = (pa.x + pb.x) / 2;
+    const d = pa.y === pb.y
+      ? `M${pa.x} ${pa.y}H${pb.x}`
+      : `M${pa.x} ${pa.y}C${mid} ${pa.y} ${mid} ${pb.y} ${pb.x} ${pb.y}`;
     edges += `<path class="eg" style="--oa:${oa};--ob:${ob}" d="${d}" fill="none" stroke="#fff" stroke-width="4"/>`;
   });
 
-  /* ---- commits ---- */
+  /* ---- commits ----
+     Lane colour is keyed by row (branch lane) by default, since col walks
+     time in the standard horizontal layout. A deck that swaps the axes (col
+     = lane, row = time, for a vertical stack) sets opt.laneBy: 'col' so
+     colour still tracks the branch instead of cycling every generation. */
+  const laneKey = c => opt.laneBy === 'col' ? c.col : c.row;
   let dots = '';
   union.forEach(c => {
-    const p = at[c.id], col = LANE[c.row % LANE.length];
+    const p = at[c.id], col = LANE[laneKey(c) % LANE.length];
     const ca = inState(A, s => s.commits.find(x => x.id === c.id));
     const cb = B ? B.commits.find(x => x.id === c.id) : ca;
     const oa = vis(!!ca, ca && ca.dim, .34);
     const ob = vis(!!cb, cb && cb.dim, .34);
+    const shape = cards
+      ? `<rect x="${p.x - cardW / 2}" y="${p.y - cardH / 2}" width="${cardW}" height="${cardH}" rx="10" fill="#0b1c27" stroke="${col}" stroke-width="5"/>`
+      : `<circle cx="${p.x}" cy="${p.y}" r="${R}" fill="#0b1c27" stroke="${col}" stroke-width="5"/>`;
     dots += `<g class="cm" style="--oa:${oa};--ob:${ob}">
-      <circle cx="${p.x}" cy="${p.y}" r="${R}" fill="#0b1c27" stroke="${col}" stroke-width="5"/>
+      ${shape}
       ${c.label ? `<text x="${p.x}" y="${p.y + 11}" text-anchor="middle" fill="${col}"
-        font-family="ui-monospace,Menlo,monospace" font-size="26">${c.label}</text>` : ''}
+        font-family="ui-monospace,Menlo,monospace" font-size="${cards ? 32 : 26}">${c.label}</text>` : ''}
     </g>`;
   });
 
@@ -213,6 +249,7 @@ function graph(id, x, y, w, spec, opt = {}) {
     if (!names.includes(r.name)) names.push(r.name);
   });
 
+  const halfH = cards ? cardH / 2 : R;
   let refs = '';
   names.forEach(name => {
     const ra = (A.refs || []).find(r => r.name === name);
@@ -225,7 +262,7 @@ function graph(id, x, y, w, spec, opt = {}) {
       /* A lifted ref stops at the box stacked below it rather than drawing a
          stem straight through it down to the commit. */
       const L = r.lift || 0;
-      return { x: p.x - wTxt / 2, y: p.y - R - 62 - L * 46, stem: L ? 46 : 62 };
+      return { x: p.x - wTxt / 2, y: p.y - halfH - 62 - L * 46, stem: L ? 46 : 62 };
     };
     const pa = ra && pos(ra), pb = rb && pos(rb);
     const home = pa || pb;
